@@ -1,32 +1,49 @@
 import java.util.function.Consumer;
 
-class Connection implements AutoCloseable {
+class Resource {
 
-    private Connection() {
+    private Resource() {
     }
 
-    Connection executeQuery() {
-        System.out.println("executing");
+    Resource op1() {
+        System.out.println("op1");
         return this;
     }
 
-    public static void use(Consumer<Connection> block) {
-        try (final Connection connection = new Connection()) {
-            block.accept(connection);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    Resource op2() {
+        System.out.println("op2");
+        return this;
     }
 
-    @Override
-    public void close() throws Exception {
-        System.out.println("Auto connection closed");
+    Resource op3() {
+        System.out.println("op2");
+        return this;
+    }
+
+    private static void doSomething() {
+        System.out.println("cleaning up");
+    }
+
+    static void use(Consumer<Resource> block) {
+        try {
+            final Resource resource = new Resource();
+            block.accept(resource);
+        } finally {
+            doSomething();
+        }
     }
 }
 
 
 public class AroundMethodPattern {
     public static void main(String... args) {
-        Connection.use(Connection::executeQuery);
+        Resource.use(
+                resource ->
+                {
+                    resource.op1();
+                    resource.op2();
+                    resource.op3();
+                });
+
     }
 }
