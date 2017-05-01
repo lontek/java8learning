@@ -20,16 +20,16 @@ class Resource {
         return this;
     }
 
-    private static void doSomething() {
+    void doSomething() {
         System.out.println("cleaning up");
     }
 
     static void use(Consumer<Resource> block) {
+        final Resource resource = new Resource();
         try {
-            final Resource resource = new Resource();
             block.accept(resource);
         } finally {
-            doSomething();
+            resource.doSomething();
         }
     }
 }
